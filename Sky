@@ -1,0 +1,39 @@
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- vxt.ai V14.0 - LOCALMAID SKYBOX ENGINE
+-- OWNER: VinzzxVXT
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+local IMAGE_ID = "rbxassetid://108797261811252" 
+
+local function applySkybox()
+    local lighting = game:GetService("Lighting")
+    
+    -- Bersihkan Skybox lama
+    for _, v in pairs(lighting:GetChildren()) do
+        if v:IsA("Sky") then
+            v:Destroy()
+        end
+    end
+    
+    -- Deploy Skybox VXT
+    local newSky = Instance.new("Sky")
+    newSky.Name = "VXT_MaidSky"
+    newSky.Parent = lighting
+    
+    -- Sinkronisasi Gambar ke 6 Sisi Langit
+    newSky.SkyboxBk = IMAGE_ID
+    newSky.SkyboxDn = IMAGE_ID
+    newSky.SkyboxFt = IMAGE_ID
+    newSky.SkyboxLf = IMAGE_ID
+    newSky.SkyboxRt = IMAGE_ID
+    newSky.SkyboxUp = IMAGE_ID
+    
+    -- Optimasi Visual
+    newSky.CelestialBodiesShown = false -- Hapus Matahari/Bulan/Awan bawaan
+    newSky.SunTextureId = ""
+    newSky.MoonTextureId = ""
+    
+    print("[🚀] VXT SKYBOX: SUCCESS INJECTED!")
+end
+
+applySkybox()
