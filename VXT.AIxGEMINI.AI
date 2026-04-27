@@ -1,0 +1,93 @@
+---- ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- GEMINI AI V14.0 ROBLOX
+-- OWNER: VINZZX
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+local Core = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local LP = Players.LocalPlayer
+
+local CORRECT_PIN = "333777123654"
+
+-- --- UI SETUP ---
+local Screen = Instance.new("ScreenGui", Core)
+Screen.Name = "GeminiVXT"
+
+-- --- PIN SYSTEM (SENSOR *) ---
+local PinFrame = Instance.new("Frame", Screen)
+PinFrame.Size = UDim2.new(0, 300, 0, 150)
+PinFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
+PinFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+
+local PinInput = Instance.new("TextBox", PinFrame)
+PinInput.Size = UDim2.new(0, 200, 0, 40)
+PinInput.Position = UDim2.new(0.5, -100, 0.4, -20)
+PinInput.PlaceholderText = "ENTER PIN..."
+PinInput.Text = ""
+
+-- Logic Sensor *
+PinInput:GetPropertyChangedSignal("Text"):Connect(function()
+    local cleanText = PinInput.Text:gsub("%*", "")
+    if #PinInput.Text > 0 then
+        PinInput.Text = string.rep("*", #PinInput.Text)
+    end
+end)
+
+-- --- MAIN PANEL (HIDEABLE) ---
+local MainFrame = Instance.new("Frame", Screen)
+MainFrame.Size = UDim2.new(0, 250, 0, 300)
+MainFrame.Position = UDim2.new(1, -260, 0.5, -150)
+MainFrame.Visible = false
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+
+local AIChat = Instance.new("TextBox", MainFrame)
+AIChat.Size = UDim2.new(1, -20, 0, 40)
+AIChat.Position = UDim2.new(0, 10, 1, -50)
+AIChat.PlaceholderText = "Ask Gemini (Kill, Fling...)"
+
+-- --- LOGIC COMMANDS (NOT VISUAL) ---
+local function ExecuteAI(msg)
+    local args = msg:split(" ")
+    local cmd = args[1]:lower()
+    local targetName = args[2]
+    local target = nil
+    
+    for _, p in pairs(Players:GetPlayers()) do
+        if p.Name:lower():sub(1, #targetName) == targetName:lower() then
+            target = p
+        end
+    end
+
+    if target then
+        if cmd == "kill" then
+            target.Character.Humanoid.Health = 0
+        elseif cmd == "kick" then
+            target:Kick("BANNED BY GEMINI AI V14.0")
+        elseif cmd == "fling" then
+            local hrp = target.Character.HumanoidRootPart
+            hrp.Velocity = Vector3.new(0, 5000, 0) -- Terbang tinggi
+        end
+    end
+end
+
+AIChat.FocusLost:Connect(function(enter)
+    if enter then
+        ExecuteAI(AIChat.Text)
+        AIChat.Text = ""
+    end
+end)
+
+-- Pin Submission
+PinInput.FocusLost:Connect(function(enter)
+    if enter and PinInput.Text == string.rep("*", #CORRECT_PIN) then
+        PinFrame:Destroy()
+        MainFrame.Visible = true
+    end
+end)
+
+-- Hide Toggle (Key: L)
+game:GetService("UserInputService").InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.L then
+        MainFrame.Visible = not MainFrame.Visible
+    end
+end)
