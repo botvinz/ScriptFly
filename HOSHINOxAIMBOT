@@ -1,0 +1,192 @@
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- HOSHINO AIMBOT v14.0
+-- OWNER: VINZZX
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+local Core = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInput = game:GetService("UserInputService")
+local LP = Players.LocalPlayer
+local Mouse = LP:GetMouse()
+local Camera = workspace.CurrentCamera
+
+-- --- CONFIG / STATE ---
+local Config = {
+    Aimbot = false,
+    ESPLine = false,
+    ESPBox = false,
+    TargetPart = "Head", -- Head, Body, Random
+    Visible = true
+}
+
+-- --- UI CREATION ---
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "HoshinoAimbot"
+Gui.Parent = Core
+Gui.IgnoreGuiInset = true
+-- Fitur Anti-Record (Hanya jalan di beberapa Executor Pro)
+if setbit then setbit(Gui, "DisplayOrder", 10) end 
+
+-- [ LOGO PELEGER ]
+local LogoBtn = Instance.new("ImageButton")
+LogoBtn.Name = "Peleger"
+LogoBtn.Parent = Gui
+LogoBtn.Position = UDim2.new(0, 20, 0.1, 0)
+LogoBtn.Size = UDim2.new(0, 60, 0, 60)
+LogoBtn.BackgroundColor3 = Color3.fromRGB(255, 105, 180) -- Pink
+LogoBtn.Image = "rbxassetid://16127113113" -- Pastikan ID Logo lu bener
+local LogoCorner = Instance.new("UICorner")
+LogoCorner.CornerRadius = UDim.new(0, 15)
+LogoCorner.Parent = LogoBtn
+
+-- [ MAIN PANEL ]
+local Main = Instance.new("Frame")
+Main.Name = "MainFrame"
+Main.Parent = Gui
+Main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Main.BackgroundTransparency = 0.3
+Main.Position = UDim2.new(0.5, -175, 0.5, -125)
+Main.Size = UDim2.new(0, 350, 0, 250)
+Main.Active = true
+Main.Draggable = true
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = Color3.fromRGB(255, 105, 180)
+MainStroke.Thickness = 3
+MainStroke.Parent = Main
+
+-- Title: HOSHINO AIMBOT
+local Title = Instance.new("TextLabel")
+Title.Parent = Main
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+Title.Text = "HOSHINO AIMBOT"
+Title.Font = Enum.Font.FredokaOne
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 20
+
+-- --- FUNCTIONS: TOGGLE BUTTONS ---
+local function CreateToggle(name, pos, callback)
+    local Label = Instance.new("TextLabel")
+    Label.Parent = Main
+    Label.Text = name
+    Label.Position = pos
+    Label.Size = UDim2.new(0, 100, 0, 30)
+    Label.BackgroundTransparency = 1
+    Label.TextColor3 = Color3.fromRGB(255, 105, 180)
+    Label.TextXAlignment = "Left"
+
+    local Btn = Instance.new("TextButton")
+    Btn.Parent = Main
+    Btn.Position = UDim2.new(pos.X.Scale, pos.X.Offset + 150, pos.Y.Scale, pos.Y.Offset)
+    Btn.Size = UDim2.new(0, 50, 0, 20)
+    Btn.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Start Merah
+    Btn.Text = ""
+    
+    local state = false
+    Btn.MouseButton1Click:Connect(function()
+        state = not state
+        Btn.BackgroundColor3 = state and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+        callback(state)
+    end)
+end
+
+CreateToggle("AIMBOT", UDim2.new(0, 20, 0, 60), function(s) Config.Aimbot = s end)
+CreateToggle("ESP LINE", UDim2.new(0, 20, 0, 90), function(s) Config.ESPLine = s end)
+CreateToggle("ESP BOX", UDim2.new(0, 20, 0, 120), function(s) Config.ESPBox = s end)
+
+-- --- SELECTION AIMBOT ---
+local Selector = Instance.new("Frame")
+Selector.Parent = Main
+Selector.Size = UDim2.new(0, 310, 0, 30)
+Selector.Position = UDim2.new(0, 20, 0, 155)
+Selector.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Selector.BackgroundTransparency = 0.5
+
+local GreenBar = Instance.new("Frame")
+GreenBar.Parent = Selector
+GreenBar.Size = UDim2.new(0.33, 0, 1, 0)
+GreenBar.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+GreenBar.BorderSizePixel = 0
+
+local function CreateChoice(name, pos, part, offset)
+    local B = Instance.new("TextButton")
+    B.Parent = Selector
+    B.Size = UDim2.new(0.33, 0, 1, 0)
+    B.Position = pos
+    B.BackgroundTransparency = 1
+    B.Text = name
+    B.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    B.MouseButton1Click:Connect(function()
+        Config.TargetPart = part
+        GreenBar:TweenPosition(pos, "Out", "Quad", 0.3)
+    end)
+end
+
+CreateChoice("HEAD", UDim2.new(0, 0, 0, 0), "Head")
+CreateChoice("BODY", UDim2.new(0.33, 0, 0, 0), "UpperTorso")
+CreateChoice("RANDOM", UDim2.new(0.66, 0, 0, 0), "Random")
+
+-- --- TQTQ SECTION ---
+local TQ = Instance.new("TextLabel")
+TQ.Parent = Main
+TQ.Position = UDim2.new(0, 20, 0, 190)
+TQ.Size = UDim2.new(0, 310, 0, 50)
+TQ.Text = "OWNER: VINZZX | FRIENDS: GUNTUR\nAI: VXT.AI | ALLAH SWT"
+TQ.TextColor3 = Color3.fromRGB(255, 255, 255)
+TQ.TextSize = 12
+TQ.BackgroundTransparency = 1
+
+-- --- LOGIC: HIDE MENU ---
+LogoBtn.MouseButton1Click:Connect(function()
+    Config.Visible = not Config.Visible
+    Main.Visible = Config.Visible
+end)
+
+-- --- LOGIC: AIMBOT & ESP ---
+RunService.RenderStepped:Connect(function()
+    if Config.Aimbot then
+        -- Simple Aimbot Logic
+        local target = nil
+        local dist = math.huge
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= LP and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                local pos, vis = Camera:WorldToViewportPoint(p.Character.PrimaryPart.Position)
+                if vis then
+                    local mag = (Vector2.new(pos.X, pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+                    if mag < dist then
+                        dist = mag
+                        target = p.Character
+                    end
+                end
+            end
+        end
+        if target then
+            local pName = Config.TargetPart
+            if pName == "Random" then pName = (math.random(1,2) == 1 and "Head" or "UpperTorso") end
+            if target:FindFirstChild(pName) then
+                Camera.CFrame = CFrame.new(Camera.CFrame.Position, target[pName].Position)
+            end
+        end
+    end
+
+    -- ESP (Line Putih, Box Merah)
+    -- Ini versi simpel, lu butuh Drawing Library buat hasil pro
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= LP and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            local pos, vis = Camera:WorldToViewportPoint(p.Character.HumanoidRootPart.Position)
+            if vis then
+                if Config.ESPLine then
+                    -- Render Line White (Logic Drawing goes here)
+                end
+                if Config.ESPBox then
+                    -- Render Box Red (Logic Drawing goes here)
+                end
+            end
+        end
+    end
+end)
+
+print("[🚀] HOSHINO AIMBOT LOADED | OWNER: VINZZX")
