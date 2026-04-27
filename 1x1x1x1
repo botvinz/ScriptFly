@@ -1,0 +1,57 @@
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- vxt.ai V14.0 - 1x1x1x1 ENTITY PROTOCOL
+-- OWNER: VINZZX
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+local Players = game:GetService("Players")
+local Lighting = game:GetService("Lighting")
+local LP = Players.LocalPlayer
+local Character = LP.Character or LP.CharacterAdded:Wait()
+
+-- --- 1. TRANSFORMAASI KARAKTER (LOCAL) ---
+local function Become1x1x1x1()
+    -- Hapus identitas lama
+    for _, v in pairs(Character:GetChildren()) do
+        if v:IsA("Accessory") or v:IsA("Shirt") or v:IsA("Pants") or v:IsA("CharacterMesh") then
+            v:Destroy()
+        end
+    end
+    
+    -- Set Skin Tone (1x1x1x1 Gray/Greenish)
+    local bodyColors = Character:FindFirstChildOfClass("BodyColors") or Instance.new("BodyColors", Character)
+    bodyColors.HeadColor3 = Color3.fromRGB(27, 42, 53)
+    bodyColors.LeftArmColor3 = Color3.fromRGB(27, 42, 53)
+    bodyColors.RightArmColor3 = Color3.fromRGB(27, 42, 53)
+    bodyColors.LeftLegColor3 = Color3.fromRGB(27, 42, 53)
+    bodyColors.RightLegColor3 = Color3.fromRGB(27, 42, 53)
+    bodyColors.TorsoColor3 = Color3.fromRGB(27, 42, 53)
+
+    -- Efek Aura (Particle)
+    local attachment = Instance.new("Attachment", Character.HumanoidRootPart)
+    local particles = Instance.new("ParticleEmitter", attachment)
+    particles.Color = ColorSequence.new(Color3.fromRGB(0, 255, 0)) -- Hijau khas 1x1x1x1
+    particles.Size = NumberSequence.new(0.5)
+    particles.Rate = 50
+    particles.Speed = NumberRange.new(2, 5)
+    particles.Transparency = NumberSequence.new(0.5)
+end
+
+-- --- 2. WORLD CORRUPTION (LOCAL) ---
+local function CorruptWorld()
+    Lighting.Brightness = 0
+    Lighting.ClockTime = 0
+    Lighting.FogEnd = 100
+    Lighting.FogColor = Color3.fromRGB(0, 50, 0)
+    Lighting.OutdoorAmbient = Color3.fromRGB(0, 0, 0)
+    
+    -- Hapus Langit (Skybox)
+    for _, v in pairs(Lighting:GetChildren()) do
+        if v:IsA("Sky") then v:Destroy() end
+    end
+end
+
+-- --- EXECUTION ---
+Become1x1x1x1()
+CorruptWorld()
+
+print("[🚀] 1x1x1x1 PROTOCOL ACTIVE. THE VOID IS HERE.")
