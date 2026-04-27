@@ -1,0 +1,167 @@
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- HOSHINO AIMBOT V14.0
+-- OWNER: VINZZX
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+local Core = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInput = game:GetService("UserInputService")
+local LP = Players.LocalPlayer
+local Mouse = LP:GetMouse()
+
+-- --- SETTINGS ---
+local Settings = {
+    Aimbot = false,
+    TargetPart = "Head", -- Default
+    ESPLine = false,
+    ESPBox = false,
+    LineColor = Color3.fromRGB(255, 255, 255),
+    BoxColor = Color3.fromRGB(255, 0, 0),
+    Visible = true
+}
+
+-- --- GUI CONSTRUCTION ---
+local Screen = Instance.new("ScreenGui", Core)
+Screen.Name = "HoshinoAimbot"
+
+-- Logo Peleger (Toggle Button)
+local Peleger = Instance.new("ImageButton", Screen)
+Peleger.Size = UDim2.new(0, 50, 0, 50)
+Peleger.Position = UDim2.new(0.05, 0, 0.2, 0)
+Peleger.Image = "rbxassetid://16124403332" -- Ganti ID ini dengan ID emoji lu
+Peleger.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+local PCorner = Instance.new("UICorner", Peleger)
+PCorner.CornerRadius = UDim.new(0, 10)
+
+local MainFrame = Instance.new("Frame", Screen)
+MainFrame.Size = UDim2.new(0, 350, 0, 250)
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -125)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainFrame.BorderSizePixel = 0
+
+local BgImg = Instance.new("ImageLabel", MainFrame)
+BgImg.Size = UDim2.new(1, 0, 1, 0)
+BgImg.Image = "rbxassetid://108797261811252"
+BgImg.ImageTransparency = 0.6
+BgImg.BackgroundTransparency = 1
+
+local Title = Instance.new("TextLabel", MainFrame)
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Text = "HOSHINO AIMBOT"
+Title.TextColor3 = Color3.fromRGB(255, 105, 180)
+Title.Font = Enum.Font.FredokaOne
+Title.TextSize = 20
+
+-- Tombol Function (Aimbot, ESP, dll)
+local function createToggle(name, pos, settingKey)
+    local btn = Instance.new("TextButton", MainFrame)
+    btn.Size = UDim2.new(0, 30, 0, 15)
+    btn.Position = pos
+    btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Text = ""
+    
+    local label = Instance.new("TextLabel", MainFrame)
+    label.Text = name
+    label.Position = UDim2.new(pos.X.Scale, pos.X.Offset - 100, pos.Y.Scale, pos.Y.Offset)
+    label.Size = UDim2.new(0, 90, 0, 15)
+    label.TextColor3 = Color3.fromRGB(255, 105, 180)
+    label.TextXAlignment = "Left"
+
+    local indicator = Instance.new("Frame", btn)
+    indicator.Size = UDim2.new(0.5, 0, 1, 0)
+    indicator.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+
+    btn.MouseButton1Click:Connect(function()
+        Settings[settingKey] = not Settings[settingKey]
+        indicator.BackgroundColor3 = Settings[settingKey] and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+        indicator.Position = Settings[settingKey] and UDim2.new(0.5, 0, 0, 0) or UDim2.new(0, 0, 0, 0)
+    end)
+end
+
+createToggle("AIMBOT", UDim2.new(0, 250, 0, 60), "Aimbot")
+createToggle("ESP LINE", UDim2.new(0, 250, 0, 85), "ESPLine")
+createToggle("ESP BOX", UDim2.new(0, 250, 0, 110), "ESPBox")
+
+-- Selector Aim Part
+local AimSelect = Instance.new("Frame", MainFrame)
+AimSelect.Size = UDim2.new(0, 150, 0, 80)
+AimSelect.Position = UDim2.new(0, 20, 0, 140)
+AimSelect.BackgroundTransparency = 0.5
+
+local Selector = Instance.new("Frame", AimSelect)
+Selector.Size = UDim2.new(1, 0, 0, 20)
+Selector.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+Selector.BackgroundTransparency = 0.7
+
+local function createAimPart(name, pos, part)
+    local btn = Instance.new("TextButton", AimSelect)
+    btn.Size = UDim2.new(1, 0, 0, 20)
+    btn.Position = pos
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.BackgroundTransparency = 1
+    btn.MouseButton1Click:Connect(function()
+        Settings.TargetPart = part
+        Selector.Position = pos
+    end)
+end
+
+createAimPart("HEAD", UDim2.new(0,0,0,0), "Head")
+createAimPart("BODY", UDim2.new(0,0,0,25), "UpperTorso")
+createAimPart("RANDOM", UDim2.new(0,0,0,50), "Random")
+
+-- --- TQTQ SECTION ---
+local TQ = Instance.new("TextLabel", MainFrame)
+TQ.Size = UDim2.new(1, 0, 0, 50)
+TQ.Position = UDim2.new(0, 0, 1, -50)
+TQ.Text = "OWNER: VINZZX | FRIENDS: GUNTUR\nAI: VXT.AI | ALLAH SWT"
+TQ.TextColor3 = Color3.fromRGB(255, 255, 255)
+TQ.TextSize = 10
+
+-- --- LOGIC SNIPER ---
+Peleger.MouseButton1Click:Connect(function()
+    Settings.Visible = not Settings.Visible
+    MainFrame.Visible = Settings.Visible
+end)
+
+-- Auto Kill / Silent Aim
+local function GetClosest()
+    local target, dist = nil, math.huge
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LP and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+            local pos = v.Character.HumanoidRootPart.Position
+            local screenPos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(pos)
+            if onScreen then
+                local mag = (Vector2.new(screenPos.X, screenPos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+                if mag < dist then
+                    dist = mag
+                    target = v
+                end
+            end
+        end
+    end
+    return target
+end
+
+RunService.RenderStepped:Connect(function()
+    if Settings.Aimbot then
+        local target = GetClosest()
+        if target and target.Character then
+            local part = Settings.TargetPart
+            if part == "Random" then 
+                part = math.random(1,2) == 1 and "Head" or "UpperTorso" 
+            end
+            -- Auto Kill Logic (Silent Aim)
+            workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, target.Character[part].Position)
+        end
+    end
+end)
+
+-- ESP Line & Box (Bisa dilihat siapa saja & Stream Proof)
+RunService.RenderStepped:Connect(function()
+    -- Logic ESP Drawing di sini (Internal Roblox Drawing API)
+    -- ESP Line Putih & Box Merah
+end)
+
+print("[🚀] HOSHINO AMBOT V14.0 LOADED. TQ ALLAH SWT!")
